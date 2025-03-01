@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEX-ORBIT</title>
+    <style>
+        :root {
+            --primary-color: #2a2a36;
+            --secondary-color: #4a4a6a;
+            --accent-color: #7b68ee;
+            --text-color: #e0e0ff;
+            --highlight-color: #ff7b68;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        header {
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(to bottom, rgba(42, 42, 54, 0.9), rgba(42, 42, 54, 0.5));
+            border-bottom: 2px solid var(--accent-color);
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #ff7b68, #7b68ee, #68eeff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: title-glow 3s infinite alternate;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        section {
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--highlight-color);
+        }
+        
+        section p {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .planet {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, var(--highlight-color), var(--accent-color));
+            position: absolute;
+            animation: orbit 20s linear infinite;
+            box-shadow: 0 0 20px rgba(123, 104, 238, 0.8);
+        }
+        
+        .planet::after {
+            content: "";
+            position: absolute;
+            width: 120%;
+            height: 20px;
+            background: rgba(123, 104, 238, 0.3);
+            border-radius: 50%;
+            top: 50%;
+            left: -10%;
+            transform: rotate(30deg);
+        }
+        
+        .planet-1 {
+            top: 20%;
+            right: 10%;
+            animation-duration: 15s;
+        }
+        
+        .planet-2 {
+            bottom: 15%;
+            left: 5%;
+            width: 60px;
+            height: 60px;
+            animation-duration: 25s;
+            background: radial-gradient(circle at 30% 30%, #68eeff, #4a4a6a);
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        button {
+            padding: 1rem 2rem;
+            background: linear-gradient(to right, var(--accent-color), var(--highlight-color));
+            color: white;
+            border: none;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(30deg);
+            transition: transform 0.5s;
+        }
+        
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(123, 104, 238, 0.4);
+        }
+        
+        button:hover::before {
+            transform: rotate(30deg) translateX(50%);
+        }
+        
+        footer {
+            padding: 2rem;
+            text-align: center;
+            background: linear-gradient(to top, rgba(42, 42, 54, 0.9), rgba(42, 42, 54, 0.5));
+            border-top: 2px solid var(--accent-color);
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            opacity: var(--opacity);
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: var(--opacity); }
+            50% { opacity: 0.2; }
+        }
+        
+        @keyframes title-glow {
+            0% { text-shadow: 0 0 10px rgba(123, 104, 238, 0.5); }
+            100% { text-shadow: 0 0 20px rgba(255, 123, 104, 0.8), 0 0 30px rgba(123, 104, 238, 0.6); }
+        }
+        
+        @keyframes orbit {
+            0% { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+        }
+        
+        .about-container {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .about-image {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+            height: 300px;
+        }
+        
+        .orbit-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .center-star {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #ffeb3b, #ff9800);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 30px rgba(255, 235, 59, 0.8);
+        }
+        
+        .orbit-path {
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            border: 1px dashed rgba(224, 224, 255, 0.3);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .orbit-planet {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform-origin: 120px 0;
+            animation: rotate-orbit var(--speed) linear infinite;
+        }
+        
+        .planet-blue {
+            background: radial-gradient(circle, #29b6f6, #0277bd);
+            --speed: 10s;
+        }
+        
+        .planet-purple {
+            background: radial-gradient(circle, #ba68c8, #7b1fa2);
+            --speed: 20s;
+        }
+        
+        .planet-green {
+            background: radial-gradient(circle, #66bb6a, #2e7d32);
+            --speed: 15s;
+        }
+        
+        @keyframes rotate-orbit {
+            0% { transform: rotate(0deg) translateX(120px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            section {
+                padding: 2rem 1rem;
+            }
+            
+            .planet {
+                display: none;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <header>
+        <h1>Welcome to HEX-ORBIT</h1>
+        <p>Explore celestial servers and discover new worlds of conversation!</p>
+    </header>
+    
+    <div class="planet planet-1"></div>
+    <div class="planet planet-2"></div>
+    
+    <section>
+        <div class="about-container">
+            <div class="about-text">
+                <h2>About Space Chat</h2>
+                <p>
+                    Space Chat is a real-time chat application inspired by Discord. Here, servers are represented as stars and channels as orbiting planets. Join our space-themed community to engage in dynamic conversations and explore a universe of ideas.
+                </p>
+                <p>
+                    Connect with like-minded individuals, create your own cosmic servers, and join existing channels. Navigate through our stellar interface to discover communities that align with your interests.
+                </p>
+            </div>
+            <div class="about-image">
+                <div class="orbit-animation">
+                    <div class="center-star"></div>
+                    <div class="orbit-path"></div>
+                    <div class="orbit-planet planet-blue"></div>
+                    <div class="orbit-path" style="width: 180px; height: 180px;"></div>
+                    <div class="orbit-planet planet-purple" style="transform-origin: 90px 0;"></div>
+                    <div class="orbit-path" style="width: 280px; height: 280px;"></div>
+                    <div class="orbit-planet planet-green" style="transform-origin: 140px 0;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section>
+        <h2>Get Started</h2>
+        <p>Ready to begin your journey among the stars? Create an account or sign in to access a universe of conversations.</p>
+        <div class="buttons">
+            <button type="button" id="signUpBtn">Create Account</button>
+            <button type="button" id="loginBtn">Sign In</button>
+        </div>
+    </section>
+    
+    <footer>
+        <p>&copy; 2025 HEX-ORBIT. All rights reserved.</p>
+    </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mongodb/4.1.1/mongodb.min.js"></script>
+    <script>
+        // Star background animation
+        function createStars() {
+            const stars = document.getElementById('stars');
+            const starsCount = 200;
+            
+            for (let i = 0; i < starsCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random position
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // Random size
+                const size = Math.random() * 3;
+                
+                // Random animation duration and opacity
+                const duration = 2 + Math.random() * 3;
+                const opacity = 0.5 + Math.random() * 0.5;
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                star.style.setProperty('--opacity', opacity);
+                
+                stars.appendChild(star);
+            }
+        }
+        
+        // Page transitions
+        function setupNavigation() {
+            const signUpBtn = document.getElementById('signUpBtn');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            signUpBtn.addEventListener('click', () => {
+                window.location.href = 'cacc.html';
+            });
+            
+            loginBtn.addEventListener('click', () => {
+                window.location.href = 'signin.html';
+            });
+        }
+        
+        // MongoDB connection setup
+        function setupMongoDB() {
+            // This would typically be done on the server side
+            // Frontend would connect to a backend API
+            // The code below is for demonstration purposes
+            
+            // In a real application, you would:
+            // 1. Set up a server with Express.js or similar
+            // 2. Connect to MongoDB from the server
+            // 3. Create API endpoints to handle user registration, etc.
+            // 4. Make fetch/axios requests from frontend to those endpoints
+            
+            console.log("MongoDB connection would be established on server-side");
+            
+            // Example server-side MongoDB connection (would be in a separate Node.js file):
+            /*
+            const { MongoClient } = require('mongodb');
+            const uri = "mongodb://localhost:27017";
+            const client = new MongoClient(uri);
+            
+            async function connectDB() {
+                try {
+                    await client.connect();
+                    const database = client.db("hex_orbit_db");
+                    const usersCollection = database.collection("users");
+                    console.log("Connected to MongoDB");
+                    return { database, usersCollection };
+                } catch (error) {
+                    console.error("Error connecting to MongoDB:", error);
+                }
+            }
+            
+            // Example user creation function:
+            async function createUser(username, email, password) {
+                const { usersCollection } = await connectDB();
+                const result = await usersCollection.insertOne({
+                    username,
+                    email,
+                    password: hashedPassword,  // Would use bcrypt to hash password
+                    created_at: new Date()
+                });
+                return result;
+            }
+            */
+        }
+        
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            createStars();
+            setupNavigation();
+            setupMongoDB();
+            
+            // Add some interactive elements
+            document.querySelectorAll('button').forEach(button => {
+                button.addEventListener('mouseenter', () => {
+                    button.style.transform = 'translateY(-5px)';
+                });
+                
+                button.addEventListener('mouseleave', () => {
+                    button.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

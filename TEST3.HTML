@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html lang="en" ng-app="authApp">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sign In - Rocket Model</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <style>
+
+        body { 
+
+            margin: 0; 
+
+            overflow: hidden; 
+
+            text-align: center; 
+
+            font-family: Arial, sans-serif; 
+
+            background: linear-gradient(180deg, #0d1b2a, #1b263b, #415a77, #778da9);
+
+            color: white;
+
+        }
+
+        #scene-container { 
+
+            position: absolute; 
+
+            width: 100vw; 
+
+            height: 100vh; 
+
+        }
+
+        .login-form { 
+
+            position: absolute; 
+
+            top: 50%; 
+
+            left: 50%; 
+
+            transform: translate(-50%, -50%); 
+
+            background: rgba(10, 25, 47, 0.95); 
+
+            padding: 20px; 
+
+            border-radius: 8px;
+
+            display: none;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            z-index: 10;
+
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+
+        }
+
+        input, button { 
+
+            margin: 10px; 
+
+            padding: 10px; 
+
+            width: 80%; 
+
+            border: none;
+
+            border-radius: 5px;
+
+            font-size: 16px;
+
+        }
+
+        input {
+
+            background: #1b263b;
+
+            color: white;
+
+        }
+
+        button {
+
+            background: #ff7f50;
+
+            color: black;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+
+        }
+
+        button:hover {
+
+            background: #ffa07a;
+
+        }
+
+        .profile-icon {
+
+            position: absolute;
+
+            top: 10px;
+
+            right: 10px;
+
+            width: 50px;
+
+            height: 50px;
+
+            background: url('https://via.placeholder.com/50') no-repeat center center;
+
+            background-size: cover;
+
+            border-radius: 50%;
+
+            display: none;
+
+        }
+
+    </style>
+
+</head>
+
+<body ng-controller="AuthController">
+
+    <div id="scene-container"></div>
+
+    <div class="login-form" id="loginContainer">
+
+        <h2>Sign Up</h2>
+
+        <input type="email" ng-model="user.email" placeholder="Email" required>
+
+        <input type="password" ng-model="user.password" placeholder="Password" required>
+
+        <button ng-click="signup()">Sign Up</button>
+
+    </div>
+
+    <div class="profile-icon" id="profileIcon"></div>
+
+    
+
+    <script>
+
+        var app = angular.module('authApp', []);
+
+        app.controller('AuthController', function($scope) {
+
+            $scope.user = {};
+
+            
+
+            $scope.signup = function() {
+
+                if ($scope.user.email && $scope.user.password) {
+
+                    document.getElementById('loginContainer').style.display = 'none';
+
+                    launchRocket();
+
+                }
+
+            };
+
+        });
+
+    
+
+        function init3DScene() {
+
+            const scene = new THREE.Scene();
+
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            document.getElementById('scene-container').appendChild(renderer.domElement);
+
+            
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+
+            scene.add(ambientLight);
+
+
+
+            const directionalLight = new THREE.DirectionalLight(0xffa07a, 2);
+
+            directionalLight.position.set(5, 10, 7);
+
+            scene.add(directionalLight);
+
+            
+
+            const loader = new THREE.GLTFLoader();
+
+            let rocket;
+
+            loader.load('https://threejs.org/examples/models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf', function(gltf) {
+
+                rocket = gltf.scene;
+
+                rocket.scale.set(1.5, 1.5, 1.5);
+
+                rocket.position.set(0, -1, 0);
+
+                scene.add(rocket);
+
+                animate();
+
+                window.rocket = rocket;
+
+            }, undefined, function(error) {
+
+                console.error('Error loading rocket model:', error);
+
+            });
+
+            
+
+            camera.position.set(0, 2, 10);
+
+            
+
+            function animate() {
+
+                requestAnimationFrame(animate);
+
+                if (rocket) rocket.rotation.y += 0.005;
+
+                renderer.render(scene, camera);
+
+            }
+
+            
+
+            renderer.domElement.addEventListener('click', function() {
+
+                if (window.rocket) {
+
+                    document.getElementById('loginContainer').style.display = 'flex';
+
+                }
+
+            });
+
+        }
+
+        init3DScene();
+
+        
+
+        function launchRocket() {
+
+            let yPosition = 0;
+
+            let xPosition = 0;
+
+            function moveToProfile() {
+
+                if (yPosition < 5) {
+
+                    yPosition += 0.1;
+
+                    xPosition += 0.05;
+
+                    if (window.rocket) {
+
+                        window.rocket.position.y = yPosition;
+
+                        window.rocket.position.x = xPosition;
+
+                    }
+
+                    requestAnimationFrame(moveToProfile);
+
+                } else {
+
+                    document.getElementById('profileIcon').style.display = 'block';
+
+                }
+
+            }
+
+            moveToProfile();
+
+        }
+
+    </script>
+
+</body>
+
+</html>

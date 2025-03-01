@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEX-ORBIT - Create Account</title>
+    <style>
+        :root {
+            --primary-color: #2a2a36;
+            --secondary-color: #4a4a6a;
+            --accent-color: #7b68ee;
+            --text-color: #e0e0ff;
+            --highlight-color: #ff7b68;
+            --error-color: #ff5252;
+            --success-color: #66bb6a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* Plants orbiting styling */
+        .planets-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            perspective: 1000px;
+        }
+        
+        .orbit {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 1px dotted rgba(123, 104, 238, 0.2);
+            transform-style: preserve-3d;
+            animation: orbit-rotate 60s linear infinite;
+        }
+        
+        .orbit:nth-child(1) {
+            top: 25%;
+            left: 25%;
+            width: 300px;
+            height: 300px;
+        }
+        
+        .orbit:nth-child(2) {
+            top: 60%;
+            left: 70%;
+            width: 250px;
+            height: 250px;
+            animation-duration: 50s;
+            animation-direction: reverse;
+        }
+        
+        .orbit:nth-child(3) {
+            top: 70%;
+            left: 25%;
+            width: 200px;
+            height: 200px;
+            animation-duration: 40s;
+        }
+        
+        .orbit:nth-child(4) {
+            top: 30%;
+            left: 70%;
+            width: 280px;
+            height: 280px;
+            animation-duration: 55s;
+            animation-direction: reverse;
+        }
+        
+        .planet {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-size: cover;
+            box-shadow: 0 0 15px rgba(123, 104, 238, 0.7);
+            transform-style: preserve-3d;
+        }
+        
+        .planet1 {
+            background: radial-gradient(circle at 30% 30%, #5dba8f, #3d9e4d);
+            top: calc(50% - 20px);
+            left: -20px;
+            animation: rotate-self 20s linear infinite;
+        }
+        
+        .planet2 {
+            background: radial-gradient(circle at 70% 30%, #da7676, #9e3d3d);
+            bottom: -20px;
+            left: calc(50% - 20px);
+            animation: rotate-self 15s linear infinite reverse;
+        }
+        
+        .planet3 {
+            background: radial-gradient(circle at 40% 60%, #76dada, #3d9e9e);
+            top: -20px;
+            left: calc(50% - 20px);
+            animation: rotate-self 25s linear infinite;
+        }
+        
+        .planet4 {
+            background: radial-gradient(circle at 60% 40%, #da76da, #9e3d9e);
+            top: calc(50% - 20px);
+            right: -20px;
+            animation: rotate-self 18s linear infinite reverse;
+        }
+        
+        @keyframes orbit-rotate {
+            0% { transform: rotateZ(0deg) rotateY(60deg); }
+            100% { transform: rotateZ(360deg) rotateY(60deg); }
+        }
+        
+        @keyframes rotate-self {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        header {
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(to bottom, rgba(42, 42, 54, 0.9), rgba(42, 42, 54, 0.5));
+            border-bottom: 2px solid var(--accent-color);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #ff7b68, #7b68ee, #68eeff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: title-glow 3s infinite alternate;
+        }
+        
+        header p {
+            font-size: 1rem;
+        }
+        
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .form-container {
+            background: rgba(42, 42, 54, 0.8);
+            border-radius: 10px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 0 20px rgba(123, 104, 238, 0.3);
+            border: 1px solid var(--accent-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .form-container::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            z-index: -1;
+            background: linear-gradient(45deg, var(--accent-color), var(--highlight-color));
+            filter: blur(20px);
+            opacity: 0.3;
+        }
+        
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--highlight-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--secondary-color);
+            background-color: rgba(74, 74, 106, 0.3);
+            color: var(--text-color);
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(123, 104, 238, 0.5);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .toggle-password {
+            display: inline-block;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            text-align: left;
+            padding: 0;
+        }
+        
+        .toggle-password:hover {
+            color: var(--accent-color);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        button {
+            flex: 1;
+            padding: 1rem;
+            background: linear-gradient(to right, var(--accent-color), var(--highlight-color));
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button.secondary {
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+        }
+        
+        button::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(30deg);
+            transition: transform 0.5s;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(123, 104, 238, 0.4);
+        }
+        
+        button:hover::before {
+            transform: rotate(30deg) translateX(50%);
+        }
+        
+        .signin-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        
+        .signin-link a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .signin-link a:hover {
+            color: var(--highlight-color);
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        .registration-error {
+            color: var(--error-color);
+            text-align: center;
+            padding: 1rem;
+            border-radius: 5px;
+            background-color: rgba(255, 82, 82, 0.1);
+            border: 1px solid var(--error-color);
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        footer {
+            padding: 1rem;
+            text-align: center;
+            background: linear-gradient(to top, rgba(42, 42, 54, 0.9), rgba(42, 42, 54, 0.5));
+            border-top: 2px solid var(--accent-color);
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            opacity: var(--opacity);
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: var(--opacity); }
+            50% { opacity: 0.2; }
+        }
+        
+        @keyframes title-glow {
+            0% { text-shadow: 0 0 10px rgba(123, 104, 238, 0.5); }
+            100% { text-shadow: 0 0 20px rgba(255, 123, 104, 0.8), 0 0 30px rgba(123, 104, 238, 0.6); }
+        }
+        
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="planets-container">
+        <div class="orbit">
+            <div class="planet planet1"></div>
+        </div>
+        <div class="orbit">
+            <div class="planet planet2"></div>
+        </div>
+        <div class="orbit">
+            <div class="planet planet3"></div>
+        </div>
+        <div class="orbit">
+            <div class="planet planet4"></div>
+        </div>
+    </div>
+    
+    <header>
+        <h1>HEX-ORBIT</h1>
+        <p>Join the cosmic journey</p>
+    </header>
+    
+    <main>
+        <div class="form-container">
+            <div class="registration-error" id="registrationError">
+                Registration failed. Please check your information and try again.
+            </div>
+            
+            <h2>Create Account</h2>
+            
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                    <div class="error-message" id="nameError">Please enter your full name</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                    <div class="error-message" id="emailError">Please enter a valid email address</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-container">
+                        <input type="password" id="password" name="password" required>
+                        <div class="error-message" id="passwordError">Password must be at least 8 characters</div>
+                        <button type="button" class="toggle-password" id="togglePassword">Show Password</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Re-enter Password</label>
+                    <div class="password-container">
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        <div class="error-message" id="confirmPasswordError">Passwords do not match</div>
+                        <button type="button" class="toggle-password" id="toggleConfirmPassword">Show Password</button>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" class="secondary" id="backBtn">Back to Home</button>
+                    <button type="submit" id="createAccountBtn">Create Account</button>
+                </div>
+            </form>
+            
+            <div class="signin-link">
+                Already have an account? <a href="signin.html">Sign In</a>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 HEX-ORBIT. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        // Star background animation
+        function createStars() {
+            const stars = document.getElementById('stars');
+            const starsCount = 200;
+            
+            for (let i = 0; i < starsCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random position
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // Random size
+                const size = Math.random() * 3;
+                
+                // Random animation duration and opacity
+                const duration = 2 + Math.random() * 3;
+                const opacity = 0.5 + Math.random() * 0.5;
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                star.style.setProperty('--opacity', opacity);
+                
+                stars.appendChild(star);
+            }
+        }
+        
+        // Toggle password visibility
+        function setupPasswordToggles() {
+            const togglePassword = document.getElementById('togglePassword');
+            const password = document.getElementById('password');
+            
+            togglePassword.addEventListener('click', function() {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                this.textContent = type === 'password' ? 'Show Password' : 'Hide Password';
+            });
+            
+            const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+            
+            toggleConfirmPassword.addEventListener('click', function() {
+                const type = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+                confirmPassword.setAttribute('type', type);
+                this.textContent = type === 'password' ? 'Show Password' : 'Hide Password';
+            });
+        }
+        
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            
+            // Name validation
+            const name = document.getElementById('name');
+            const nameError = document.getElementById('nameError');
+            
+            if (name.value.trim() === '') {
+                nameError.style.display = 'block';
+                name.style.borderColor = 'var(--error-color)';
+                isValid = false;
+            } else {
+                nameError.style.display = 'none';
+                name.style.borderColor = 'var(--secondary-color)';
+            }
+            
+            // Email validation
+            const email = document.getElementById('email');
+            const emailError = document.getElementById('emailError');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (!emailRegex.test(email.value)) {
+                emailError.style.display = 'block';
+                email.style.borderColor = 'var(--error-color)';
+                isValid = false;
+            } else {
+                emailError.style.display = 'none';
+                email.style.borderColor = 'var(--secondary-color)';
+            }
+            
+            // Password validation
+            const password = document.getElementById('password');
+            const passwordError = document.getElementById('passwordError');
+            
+            if (password.value.length < 8) {
+                passwordError.style.display = 'block';
+                password.style.borderColor = 'var(--error-color)';
+                isValid = false;
+            } else {
+                passwordError.style.display = 'none';
+                password.style.borderColor = 'var(--secondary-color)';
+            }
+            
+            // Confirm password validation
+            const confirmPassword = document.getElementById('confirmPassword');
+            const confirmPasswordError = document.getElementById('confirmPasswordError');
+            
+            if (confirmPassword.value !== password.value) {
+                confirmPasswordError.style.display = 'block';
+                confirmPassword.style.borderColor = 'var(--error-color)';
+                isValid = false;
+            } else {
+                confirmPasswordError.style.display = 'none';
+                confirmPassword.style.borderColor = 'var(--secondary-color)';
+            }
+            
+            return isValid;
+        }
+        
+        // Form submission
+        function setupFormSubmission() {
+            const form = document.getElementById('registrationForm');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (validateForm()) {
+                    // Get form data
+                    const name = document.getElementById('name').value;
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    
+                    // Show loading state on button
+                    const button = document.getElementById('createAccountBtn');
+                    const originalText = button.textContent;
+                    button.textContent = 'Creating Account...';
+                    button.disabled = true;
+                    
+                    // Simulate network delay
+                    setTimeout(() => {
+                        // In a real app, you would send this to your backend
+                        // For demo purposes, we'll store in localStorage
+                        const userData = {
+                            name: name,
+                            email: email,
+                            password: password,
+                            createdAt: new Date().toISOString()
+                        };
+                        
+                        localStorage.setItem('hexOrbitUser', JSON.stringify(userData));
+                        localStorage.setItem('hexOrbitLoggedIn', 'true');
+                        
+                        // Success animation
+                        const formContainer = document.querySelector('.form-container');
+                        formContainer.style.animation = 'success-pulse 1s';
+                        
+                        // Redirect to dashboard after success animation
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';  // You would create this page next
+                        }, 1000);
+                        
+                    }, 1500);
+                }
+            });
+        }
+        
+        // Back button
+        function setupBackButton() {
+            const backBtn = document.getElementById('backBtn');
+            backBtn.addEventListener('click', function() {
+                window.location.href = 'hex-orbit-landing-page.html';  // Redirect to home page
+            });
+        }
+        
+        // Add animations
+        document.head.insertAdjacentHTML('beforeend', `
+            <style>
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                    20%, 40%, 60%, 80% { transform: translateX(5px); }
+                }
+                
+                @keyframes success-pulse {
+                    0% { box-shadow: 0 0 0 rgba(102, 187, 106, 0.7); }
+                    50% { box-shadow: 0 0 30px rgba(102, 187, 106, 0.9); }
+                    100% { box-shadow: 0 0 0 rgba(102, 187, 106, 0.7); }
+                }
+            </style>
+        `);
+        
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            createStars();
+            setupPasswordToggles();
+            setupFormSubmission();
+            setupBackButton();
+        });
+    </script>
+</body>
+</html>

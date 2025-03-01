@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEX-ORBIT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0f111a;
+            --secondary-color: #1a1c25;
+            --accent-color: #7b68ee;
+            --text-color: #e0e0ff;
+            --highlight-color: #ff7b68;
+            --glow-color: rgba(123, 104, 238, 0.7);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        header {
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(to bottom, rgba(15, 17, 26, 0.95), rgba(15, 17, 26, 0.8));
+            border-bottom: 2px solid var(--accent-color);
+            box-shadow: 0 0 30px var(--glow-color);
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        h1 {
+            font-size: 3.8rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #ff7b68, #7b68ee, #68eeff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: title-glow 3s infinite alternate;
+            text-shadow: 0 0 15px rgba(123, 104, 238, 0.5);
+        }
+        
+        header p {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        
+        section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        section h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--highlight-color);
+            position: relative;
+            display: inline-block;
+        }
+        
+        section h2::after {
+            content: "";
+            position: absolute;
+            width: 40%;
+            height: 3px;
+            background: var(--accent-color);
+            bottom: -8px;
+            left: 0;
+            box-shadow: 0 0 10px var(--glow-color);
+        }
+        
+        section p {
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .planet {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, var(--highlight-color), var(--accent-color));
+            position: absolute;
+            animation: orbit 20s linear infinite;
+            box-shadow: 0 0 20px rgba(123, 104, 238, 0.8), 0 0 40px rgba(123, 104, 238, 0.4) inset;
+            z-index: -1;
+        }
+        
+        .planet::after {
+            content: "";
+            position: absolute;
+            width: 120%;
+            height: 20px;
+            background: rgba(123, 104, 238, 0.3);
+            border-radius: 50%;
+            top: 50%;
+            left: -10%;
+            transform: rotate(30deg);
+        }
+        
+        .planet-1 {
+            top: 20%;
+            right: 10%;
+            animation-duration: 15s;
+        }
+        
+        .planet-2 {
+            bottom: 15%;
+            left: 5%;
+            width: 60px;
+            height: 60px;
+            animation-duration: 25s;
+            background: radial-gradient(circle at 30% 30%, #68eeff, #4a4a6a);
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 2.5rem;
+        }
+        
+        button {
+            padding: 1rem 2rem;
+            background: linear-gradient(to right, var(--accent-color), var(--highlight-color));
+            color: white;
+            border: none;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(123, 104, 238, 0.4);
+        }
+        
+        button::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(30deg);
+            transition: transform 0.5s;
+        }
+        
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(123, 104, 238, 0.6);
+        }
+        
+        button:hover::before {
+            transform: rotate(30deg) translateX(50%);
+        }
+        
+        footer {
+            padding: 2rem;
+            text-align: center;
+            background: linear-gradient(to top, rgba(15, 17, 26, 0.95), rgba(15, 17, 26, 0.8));
+            border-top: 2px solid var(--accent-color);
+            position: relative;
+            box-shadow: 0 0 30px var(--glow-color);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .social-links {
+            margin: 20px 0;
+            display: flex;
+            gap: 20px;
+        }
+        
+        .social-links a {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            transition: color 0.3s, transform 0.3s;
+        }
+        
+        .social-links a:hover {
+            color: var(--highlight-color);
+            transform: translateY(-5px);
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            opacity: var(--opacity);
+        }
+        
+        .shooting-star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px white, 0 0 20px 5px rgba(255, 255, 255, 0.5);
+            opacity: 1;
+            animation: shooting var(--shooting-duration) linear forwards;
+        }
+        
+        .shooting-star::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 1px;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.7), transparent);
+            left: -50px;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: var(--opacity); }
+            50% { opacity: 0.2; }
+        }
+        
+        @keyframes shooting {
+            0% { 
+                transform: translate(0, 0);
+                opacity: 1;
+            }
+            95% {
+                opacity: 1;
+            }
+            100% { 
+                transform: translate(var(--distance-x), var(--distance-y));
+                opacity: 0;
+            }
+        }
+        
+        @keyframes title-glow {
+            0% { text-shadow: 0 0 10px rgba(123, 104, 238, 0.5); }
+            100% { text-shadow: 0 0 20px rgba(255, 123, 104, 0.8), 0 0 30px rgba(123, 104, 238, 0.6); }
+        }
+        
+        @keyframes orbit {
+            0% { transform: rotate(0deg) translateX(150px) rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) translateX(150px) rotate(-180deg) scale(1.1); }
+            100% { transform: rotate(360deg) translateX(150px) rotate(-360deg) scale(1); }
+        }
+        
+        .about-container {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .about-image {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+            height: 350px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .orbit-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+        }
+        
+        .center-star {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #ffeb3b, #ff9800);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 30px rgba(255, 235, 59, 0.8), 0 0 60px rgba(255, 152, 0, 0.5);
+            animation: pulse 3s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 30px rgba(255, 235, 59, 0.8), 0 0 60px rgba(255, 152, 0, 0.5); }
+            100% { box-shadow: 0 0 50px rgba(255, 235, 59, 0.9), 0 0 80px rgba(255, 152, 0, 0.7); }
+        }
+        
+        .orbit-path {
+            position: absolute;
+            border: 1px dashed rgba(224, 224, 255, 0.3);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: orbit-path-glow 4s infinite alternate;
+        }
+        
+        @keyframes orbit-path-glow {
+            0% { box-shadow: 0 0 10px rgba(224, 224, 255, 0.1); }
+            100% { box-shadow: 0 0 20px rgba(224, 224, 255, 0.2); }
+        }
+        
+        .orbit-planet {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform-origin: var(--orbit-radius) 0;
+            animation: rotate-orbit var(--speed) linear infinite;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        
+        .planet-blue {
+            background: radial-gradient(circle, #29b6f6, #0277bd);
+            --speed: 10s;
+            --orbit-radius: 120px;
+        }
+        
+        .planet-purple {
+            background: radial-gradient(circle, #ba68c8, #7b1fa2);
+            --speed: 20s;
+            --orbit-radius: 90px;
+        }
+        
+        .planet-green {
+            background: radial-gradient(circle, #66bb6a, #2e7d32);
+            --speed: 15s;
+            --orbit-radius: 140px;
+        }
+        
+        @keyframes rotate-orbit {
+            0% { transform: rotate(0deg) translateX(var(--orbit-radius)) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(var(--orbit-radius)) rotate(-360deg); }
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: rgba(26, 28, 37, 0.7);
+            border-radius: 10px;
+            padding: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(123, 104, 238, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 15px var(--glow-color);
+            border-color: var(--accent-color);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--highlight-color);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+        
+        .glitch-effect {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .glitch-effect::before,
+        .glitch-effect::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-color);
+        }
+        
+        .glitch-effect::before {
+            left: 2px;
+            text-shadow: -2px 0 #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim-1 5s infinite linear alternate-reverse;
+        }
+        
+        .glitch-effect::after {
+            left: -2px;
+            text-shadow: 2px 0 #00fff9;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim-2 5s infinite linear alternate-reverse;
+        }
+        
+        @keyframes glitch-anim-1 {
+            0% { clip: rect(96px, 9999px, 92px, 0); }
+            25% { clip: rect(75px, 9999px, 43px, 0); }
+            50% { clip: rect(15px, 9999px, 87px, 0); }
+            75% { clip: rect(87px, 9999px, 17px, 0); }
+            100% { clip: rect(59px, 9999px, 56px, 0); }
+        }
+        
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(12px, 9999px, 68px, 0); }
+            25% { clip: rect(80px, 9999px, 57px, 0); }
+            50% { clip: rect(66px, 9999px, 23px, 0); }
+            75% { clip: rect(54px, 9999px, 75px, 0); }
+            100% { clip: rect(28px, 9999px, 38px, 0); }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            section {
+                padding: 2rem 1rem;
+            }
+            
+            .planet {
+                display: none;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <header>
+        <h1>Welcome to <span class="glitch-effect" data-text="HEX-ORBIT">HEX-ORBIT</span></h1>
+        <p>Explore celestial servers and discover new worlds of conversation!</p>
+    </header>
+    
+    <div class="planet planet-1"></div>
+    <div class="planet planet-2"></div>
+    
+    <section>
+        <div class="about-container">
+            <div class="about-text">
+                <h2>About Space Chat</h2>
+                <p>
+                    Space Chat is a cutting-edge real-time chat application inspired by Discord. Here, servers are represented as stars and channels as orbiting planets. Join our space-themed community to engage in dynamic conversations and explore a universe of ideas.
+                </p>
+                <p>
+                    Connect with like-minded individuals, create your own cosmic servers, and join existing channels. Navigate through our stellar interface to discover communities that align with your interests.
+                </p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-rocket"></i></div>
+                        <h3>Fast Communication</h3>
+                        <p>Experience lightning-fast messaging with real-time updates and minimal latency.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                        <h3>Secure Encryption</h3>
+                        <p>All messages are end-to-end encrypted to ensure your privacy in the cosmic void.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-users"></i></div>
+                        <h3>Community Building</h3>
+                        <p>Create and customize your server to bring together people with similar interests.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="about-image">
+                <div class="orbit-animation">
+                    <div class="center-star"></div>
+                    <div class="orbit-path" style="width: 240px; height: 240px;"></div>
+                    <div class="orbit-planet planet-blue"></div>
+                    <div class="orbit-path" style="width: 180px; height: 180px;"></div>
+                    <div class="orbit-planet planet-purple"></div>
+                    <div class="orbit-path" style="width: 280px; height: 280px;"></div>
+                    <div class="orbit-planet planet-green"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section>
+        <h2>Get Started</h2>
+        <p>Ready to begin your journey among the stars? Create an account or sign in to access a universe of conversations.</p>
+        <div class="buttons">
+            <button type="button" id="signUpBtn"><i class="fas fa-user-plus"></i> Create Account</button>
+            <button type="button" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 HEX-ORBIT. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-discord"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Star background animation
+        function createStars() {
+            const stars = document.getElementById('stars');
+            const starsCount = 300;
+            
+            for (let i = 0; i < starsCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random position
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // Random size
+                const size = Math.random() * 3;
+                
+                // Random animation duration and opacity
+                const duration = 2 + Math.random() * 3;
+                const opacity = 0.5 + Math.random() * 0.5;
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                star.style.setProperty('--opacity', opacity);
+                
+                stars.appendChild(star);
+            }
+            
+            // Create shooting stars occasionally
+            setInterval(createShootingStar, 3000);
+        }
+        
+        function createShootingStar() {
+            const stars = document.getElementById('stars');
+            const star = document.createElement('div');
+            star.classList.add('shooting-star');
+            
+            // Random starting position (top half of screen)
+            const x = Math.random() * 100;
+            const y = Math.random() * 50;
+            
+            // Random distance
+            const distanceX = 50 + Math.random() * 100;
+            const distanceY = 50 + Math.random() * 100;
+            
+            // Random duration
+            const duration = 2 + Math.random() * 2;
+            
+            star.style.left = `${x}%`;
+            star.style.top = `${y}%`;
+            star.style.setProperty('--distance-x', `${distanceX}px`);
+            star.style.setProperty('--distance-y', `${distanceY}px`);
+            star.style.setProperty('--shooting-duration', `${duration}s`);
+            
+            stars.appendChild(star);
+            
+            // Remove shooting star after animation completes
+            setTimeout(() => {
+                star.remove();
+            }, duration * 1000);
+        }
+        
+        // Page transitions
+        function setupNavigation() {
+            const signUpBtn = document.getElementById('signUpBtn');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            signUpBtn.addEventListener('click', () => {
+                window.location.href = 'sign_up_page.html';
+            });
+            
+            loginBtn.addEventListener('click', () => {
+                window.location.href = 'log_in_page.html';
+            });
+        }
+        
+        // Add interactive elements on scroll
+        function setupScrollEffects() {
+            const sections = document.querySelectorAll('section');
+            const featureCards = document.querySelectorAll('.feature-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            sections.forEach(section => {
+                section.style.opacity = 0;
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(section);
+            });
+            
+            featureCards.forEach((card, index) => {
+                card.style.opacity = 0;
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = `opacity 0.6s ease ${index * 0.2}s, transform 0.6s ease ${index * 0.2}s`;
+                observer.observe(card);
+            });
+        }
+        
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            createStars();
+            setupNavigation();
+            setupScrollEffects();
+            
+            // Add hover effects for buttons
+            document.querySelectorAll('button').forEach(button => {
+                button.addEventListener('mouseenter', () => {
+                    button.style.transform = 'translateY(-5px)';
+                });
+                
+                button.addEventListener('mouseleave', () => {
+                    button.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

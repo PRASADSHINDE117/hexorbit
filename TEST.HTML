@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HEX-ORBIT</title>
+  <style>
+    :root {
+      --secondary-color: #4a4a6a;
+      --accent-color: #7b68ee;
+      --text-color: #e0e0ff;
+      --highlight-color: #ff7b68;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      color: var(--text-color);
+      overflow-x: hidden;
+    }
+
+    #threejs-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    header {
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+      background: rgba(42, 42, 54, 0.7);
+      border-bottom: 2px solid var(--accent-color);
+      transition: opacity 1s;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(to right, #ff7b68, #7b68ee, #68eeff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: title-glow 3s infinite alternate;
+    }
+
+    section {
+      padding: 3rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      background: rgba(42, 42, 54, 0.6);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.6s ease-out;
+      margin-bottom: 2rem;
+      border: 1px solid var(--accent-color);
+    }
+
+    section.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    button {
+      padding: 1rem 2rem;
+      background: linear-gradient(to right, var(--accent-color), var(--highlight-color));
+      border: none;
+      border-radius: 2rem;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(123, 104, 238, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(123, 104, 238, 0.5);
+    }
+
+    @keyframes title-glow {
+      0% { text-shadow: 0 0 10px rgba(123, 104, 238, 0.5); }
+      100% { text-shadow: 0 0 20px rgba(255, 123, 104, 0.8), 0 0 30px rgba(123, 104, 238, 0.6); }
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1s;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div id="threejs-container"></div>
+  <div class="overlay"></div>
+
+  <header>
+    <h1>Welcome to HEX-ORBIT</h1>
+    <p>Explore celestial servers and discover new worlds of conversation!</p>
+  </header>
+
+  <section>
+    <h2>About Space Chat</h2>
+    <p>
+      Space Chat is a real-time chat application inspired by Discord. Here, servers are represented as stars and channels as orbiting planets. 
+      Join our space-themed community to engage in dynamic conversations and explore a universe of ideas.
+    </p>
+  </section>
+
+  <section>
+    <h2>Get Started</h2>
+    <div class="buttons">
+      <button type="button" id="signUpBtn">Create Account</button>
+      <button type="button" id="loginBtn">Sign In</button>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 HEX-ORBIT. All rights reserved.</p>
+  </footer>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@v0.149.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.149.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script>
+    let scene, camera, renderer, starField;
+    let rocket, particles;
+    let animationId;
+    const rocketSpeed = 2;
+    let isAnimating = false;
+
+    function initThreeJS() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+      camera.position.z = 50;
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.getElementById('threejs-container').appendChild(renderer.domElement);
+
+      // Starfield with compatible random function
+      const starsGeometry = new THREE.BufferGeometry();
+      const starVertices = [];
+      const randSpread = (range) => (Math.random() - 0.5) * range * 2;
+
+      for (let i = 0; i < 10000; i++) {
+        starVertices.push(
+          randSpread(2000),
+          randSpread(2000),
+          randSpread(2000)
+        );
+      }
+
+      starsGeometry.setAttribute(
+        'position',
+        new THREE.BufferAttribute(new Float32Array(starVertices), 3)
+      );
+      starField = new THREE.Points(starsGeometry, new THREE.PointsMaterial({ color: 0xffffff }));
+      scene.add(starField);
+
+      // Central star
+      const sun = new THREE.Mesh(
+        new THREE.SphereGeometry(4, 32, 32),
+        new THREE.MeshBasicMaterial({ color: 0xffeb3b })
+      );
+      scene.add(sun);
+
+      createOrbitingPlanets();
+      initScrollObservers();
+    }
+
+    function createOrbitingPlanets() {
+      // Planet creation logic here
+    }
+
+    function createRocket() {
+      const rocketGroup = new THREE.Group();
+      // Rocket mesh creation logic
+      return rocketGroup;
+    }
+
+    function createParticles() {
+      const particleGeometry = new THREE.BufferGeometry();
+      const particleCount = 1000;
+      const posArray = new Float32Array(particleCount * 3);
+
+      for(let i = 0; i < particleCount * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 5;
+      }
+
+      particleGeometry.setAttribute(
+        'position',
+        new THREE.BufferAttribute(posArray, 3)
+      );
+
+      return new THREE.Points(
+        particleGeometry,
+        new THREE.PointsMaterial({
+          size: 0.02,
+          color: 0xff8844,
+          transparent: true,
+          opacity: 0.6
+        })
+      );
+    }
+
+    function launchRocket(targetUrl) {
+      if(isAnimating) return;
+      isAnimating = true;
+
+      document.querySelector('.overlay').style.opacity = 1;
+      document.querySelectorAll('header, section, footer').forEach(el => {
+        el.style.opacity = 0;
+      });
+
+      rocket = createRocket();
+      particles = createParticles();
+      scene.add(rocket, particles);
+
+      const startTime = Date.now();
+      const duration = 3000;
+
+      function animateRocket() {
+        const elapsed = Date.now() - startTime;
+        const progress = elapsed / duration;
+
+        if(progress < 1) {
+          rocket.position.y += rocketSpeed;
+          rocket.rotation.z = Math.sin(progress * Math.PI * 4) * 0.2;
+          particles.position.copy(rocket.position);
+          particles.position.y -= 1.5;
+          particles.rotation.y += 0.01;
+          animationId = requestAnimationFrame(animateRocket);
+        } else {
+          cancelAnimationFrame(animationId);
+          window.location.href = targetUrl;
+        }
+      }
+      animateRocket();
+    }
+
+    function initScrollObservers() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if(entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('section').forEach(section => {
+        observer.observe(section);
+      });
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      initThreeJS();
+      animate();
+
+      document.getElementById('signUpBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        launchRocket('sign_in_page.html');
+      });
+
+      document.getElementById('loginBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        launchRocket('log_in_page.html');
+      });
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      starField.rotation.x += 0.0005;
+      starField.rotation.y += 0.0005;
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
