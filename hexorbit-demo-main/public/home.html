@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEX-ORBIT - Home</title>
+    <style>
+        :root {
+            --primary-color: #2a2a36;
+            --secondary-color: #4a4a6a;
+            --accent-color: #7b68ee;
+            --text-color: #e0e0ff;
+            --highlight-color: #ff7b68;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        /* Stars background styling */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+            background: transparent;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            opacity: var(--opacity);
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: var(--opacity); }
+            50% { opacity: 0.2; }
+        }
+        
+        /* Header styling */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(
+                to bottom,
+                rgba(42, 42, 54, 0.9),
+                rgba(42, 42, 54, 0.5)
+            );
+            border-bottom: 2px solid var(--accent-color);
+            position: relative;
+            z-index: 100;
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            background: linear-gradient(to right, var(--highlight-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: title-glow 3s infinite alternate;
+        }
+        
+        @keyframes title-glow {
+            0% { text-shadow: 0 0 10px rgba(123, 104, 238, 0.5); }
+            100% { text-shadow: 0 0 20px rgba(255, 123, 104, 0.8), 0 0 30px rgba(123, 104, 238, 0.6); }
+        }
+        
+        header button {
+            background: none;
+            border: 1px solid var(--accent-color);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            border-radius: 4px;
+        }
+        
+        header button:hover {
+            background: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        
+        /* Toggle sidebar button */
+        .toggle-sidebar {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            background: var(--accent-color);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            z-index: 110;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-sidebar:hover {
+            background: var(--highlight-color);
+            transform: translateY(-2px);
+        }
+        
+        /* Sidebar styling */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background: rgba(42, 42, 54, 0.95);
+            padding: 4rem 1rem 1rem;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            z-index: 100;
+            border-right: 2px solid var(--accent-color);
+        }
+        
+        .sidebar.active {
+            left: 0;
+        }
+        
+        .sidebar h2 {
+            color: var(--highlight-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .sidebar .server-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        
+        .sidebar .server-buttons button {
+            flex: 1;
+            margin: 0 0.25rem;
+            padding: 0.75rem 0.5rem;
+            background: linear-gradient(
+                to right,
+                var(--accent-color),
+                var(--highlight-color)
+            );
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-weight: bold;
+        }
+        
+        .sidebar .server-buttons button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(123, 104, 238, 0.4);
+        }
+        
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar ul li {
+            margin: 0.8rem 0;
+        }
+        
+        .sidebar ul li button {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--secondary-color);
+            border: none;
+            border-radius: 4px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar ul li button:hover {
+            background: var(--accent-color);
+            transform: translateX(5px);
+        }
+        
+        .sidebar ul li button .server-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--highlight-color);
+            margin-right: 10px;
+            display: inline-block;
+        }
+        
+        /* Main content area */
+        .main-content {
+            margin-left: 0;
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+            min-height: calc(100vh - 60px);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 50;
+        }
+        
+        .sidebar.active ~ .main-content {
+            margin-left: 300px;
+        }
+        
+        /* Welcome message styling */
+        .welcome-message {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .welcome-message h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--highlight-color);
+        }
+        
+        .welcome-message p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 1rem;
+            line-height: 1.6;
+        }
+        
+        /* Solar system container */
+        .solar-system-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            margin: 2rem auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+        
+        .sun {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(
+                circle at 30% 30%,
+                #ffdd00,
+                #ff5500
+            );
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(255, 221, 0, 0.8);
+            z-index: 10;
+        }
+        
+        .orbit {
+            position: absolute;
+            border: 1px dashed rgba(123, 104, 238, 0.3);
+            border-radius: 50%;
+            transform-style: preserve-3d;
+        }
+        
+        .planet {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle at 30% 30%,
+                var(--highlight-color),
+                var(--accent-color)
+            );
+            box-shadow: 0 0 25px rgba(123, 104, 238, 0.8);
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: 0 0;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            z-index: 20;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 0.25rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .planet:hover {
+            transform: translate(-50%, -50%) scale(1.2);
+            box-shadow: 0 0 30px rgba(255, 123, 104, 0.8);
+            z-index: 30;
+        }
+        
+        /* Planet variations */
+        .planet:nth-child(2n) {
+            background: radial-gradient(
+                circle at 30% 30%,
+                var(--accent-color),
+                var(--highlight-color)
+            );
+        }
+        
+        .planet:nth-child(3n) {
+            background: radial-gradient(
+                circle at 30% 30%,
+                #68eeff,
+                var(--accent-color)
+            );
+        }
+        
+        .planet:nth-child(4n) {
+            background: radial-gradient(
+                circle at 30% 30%,
+                #ee68ff,
+                var(--accent-color)
+            );
+        }
+        
+        /* No servers message */
+        .no-servers {
+            text-align: center;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: rgba(42, 42, 54, 0.7);
+            border-radius: 10px;
+            border: 1px solid var(--accent-color);
+            max-width: 600px;
+        }
+        
+        .no-servers h3 {
+            color: var(--highlight-color);
+            margin-bottom: 1rem;
+        }
+        
+        .no-servers p {
+            margin-bottom: 1.5rem;
+        }
+        
+        .no-servers button {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(to right, var(--accent-color), var(--highlight-color));
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-weight: bold;
+            margin: 0 0.5rem;
+        }
+        
+        .no-servers button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(123, 104, 238, 0.4);
+        }
+        
+        /* Footer styling */
+        footer {
+            padding: 1rem;
+            text-align: center;
+            background: linear-gradient(to top, rgba(42, 42, 54, 0.9), rgba(42, 42, 54, 0.5));
+            border-top: 2px solid var(--accent-color);
+            margin-top: auto;
+        }
+        
+        /* Modal styling for join/create server */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: var(--primary-color);
+            border: 2px solid var(--accent-color);
+            border-radius: 10px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(123, 104, 238, 0.5);
+        }
+        
+        .modal h2 {
+            color: var(--highlight-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .modal-close:hover {
+            color: var(--highlight-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(74, 74, 106, 0.3);
+            border: 1px solid var(--secondary-color);
+            border-radius: 4px;
+            color: var(--text-color);
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        
+        .modal-buttons button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-cancel {
+            background: var(--secondary-color);
+            color: var(--text-color);
+        }
+        
+        .btn-submit {
+            background: linear-gradient(to right, var(--accent-color), var(--highlight-color));
+            color: white;
+        }
+        
+        .btn-cancel:hover, .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .sidebar {
+                width: 250px;
+                left: -250px;
+            }
+            
+            .sidebar.active ~ .main-content {
+                margin-left: 0;
+            }
+            
+            .solar-system-container {
+                height: 400px;
+            }
+            
+            .planet {
+                width: 60px;
+                height: 60px;
+                font-size: 0.7rem;
+            }
+            
+            .welcome-message h2 {
+                font-size: 1.8rem;
+            }
+        }
+        
+        /* Planet orbit animation */
+        @keyframes orbit {
+            0% { 
+                transform: translate(-50%, -50%) rotate(0deg) translateX(var(--orbit-radius)) rotate(0deg);
+            }
+            100% { 
+                transform: translate(-50%, -50%) rotate(360deg) translateX(var(--orbit-radius)) rotate(-360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Stars Background -->
+    <div class="stars" id="stars"></div>
+
+    <!-- Header -->
+    <header>
+        <h1>HEX-ORBIT</h1>
+        <div>
+            <button onclick="window.location.href='user_profile.html'">Profile</button>
+            <button onclick="window.location.href='about.html'">About</button>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <!-- Toggle Sidebar Button -->
+    <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <h2>Your Servers</h2>
+        <div class="server-buttons">
+            <button onclick="openJoinServerModal()">Join Server</button>
+            <button onclick="openCreateServerModal()">Create Server</button>
+        </div>
+        <ul id="serverList">
+            <!-- Server list will be populated dynamically -->
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="welcome-message">
+            <h2>Welcome to HEX-ORBIT</h2>
+            <p>Explore your cosmic servers displayed as planets orbiting around our virtual sun. Click on any planet to enter its orbit and join the conversation!</p>
+        </div>
+        
+        <div class="solar-system-container" id="solarSystem">
+            <div class="sun"></div>
+            <!-- Orbits and planets will be added dynamically -->
+        </div>
+        
+        <div class="no-servers" id="noServers" style="display: none;">
+            <h3>No Servers Found</h3>
+            <p>You haven't joined any servers yet. Create your own server or join an existing one to get started!</p>
+            <div>
+                <button onclick="openCreateServerModal()">Create Server</button>
+                <button onclick="openJoinServerModal()">Join Server</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 HEX-ORBIT. All rights reserved.</p>
+    </footer>
+
+    <!-- Join Server Modal -->
+    <div class="modal" id="joinServerModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('joinServerModal')">&times;</button>
+            <h2>Join a Server</h2>
+            <form id="joinServerForm">
+                <div class="form-group">
+                    <label for="serverCode">Server Invite Code</label>
+                    <input type="text" id="serverCode" required placeholder="Enter server invite code">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeModal('joinServerModal')">Cancel</button>
+                    <button type="submit" class="btn-submit">Join Server</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Server Modal -->
+    <div class="modal" id="createServerModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('createServerModal')">&times;</button>
+            <h2>Create a New Server</h2>
+            <form id="createServerForm">
+                <div class="form-group">
+                    <label for="serverName">Server Name</label>
+                    <input type="text" id="serverName" required placeholder="Enter server name">
+                </div>
+                <div class="form-group">
+                    <label for="serverDescription">Description (Optional)</label>
+                    <input type="text" id="serverDescription" placeholder="Describe your server">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeModal('createServerModal')">Cancel</button>
+                    <button type="submit" class="btn-submit">Create Server</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for servers (would be retrieved from backend in a real app)
+        const sampleServers = [
+            { id: 1, name: "Cosmic Explorers", description: "A community for space enthusiasts" },
+            { id: 2, name: "Quantum Coders", description: "Programming and development discussions" },
+            { id: 3, name: "Nebula Gamers", description: "Gaming community for all platforms" },
+            { id: 4, name: "Stellar Art", description: "Share and discuss digital art" },
+            { id: 5, name: "Orbital Chat", description: "General discussions about everything" }
+        ];
+        
+        // Create animated stars for background
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 500;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * 3 + 0.5;
+                const duration = 2 + Math.random() * 5;
+                const opacity = 0.5 + Math.random() * 0.5;
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                star.style.setProperty('--opacity', opacity);
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Toggle sidebar visibility
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("active");
+        }
+
+        // Create solar system with orbiting planets
+        function createSolarSystem() {
+            const solarSystem = document.getElementById('solarSystem');
+            const noServers = document.getElementById('noServers');
+            const serverList = document.getElementById('serverList');
+            
+            // Clear existing content
+            solarSystem.innerHTML = '<div class="sun"></div>';
+            serverList.innerHTML = '';
+            
+            // Check if there are servers to display
+            if (sampleServers.length === 0) {
+                noServers.style.display = 'block';
+                return;
+            }
+            
+            noServers.style.display = 'none';
+            
+            // Create server list in sidebar
+            sampleServers.forEach(server => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <button onclick="goToServer(${server.id})">
+                        <span class="server-icon"></span>
+                        ${server.name}
+                    </button>
+                `;
+                serverList.appendChild(listItem);
+            });
+            
+            // Create orbits and planets
+            sampleServers.forEach((server, index) => {
+                // Create orbit
+                const orbit = document.createElement('div');
+                orbit.classList.add('orbit');
+                
+                // Calculate orbit size - larger as index increases
+                const orbitSize = 180 + index * 80;
+                const orbitRadius = orbitSize / 2;
+                
+                orbit.style.width = `${orbitSize}px`;
+                orbit.style.height = `${orbitSize}px`;
+                orbit.style.top = '50%';
+                orbit.style.left = '50%';
+                orbit.style.marginLeft = `-${orbitSize / 2}px`;
+                orbit.style.marginTop = `-${orbitSize / 2}px`;
+                
+                // Randomize orbit tilt for 3D effect
+                const tiltX = Math.random() * 30 - 15;
+                const tiltY = Math.random() * 30 - 15;
+                orbit.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+                
+                solarSystem.appendChild(orbit);
+                
+                // Create planet
+                const planet = document.createElement('div');
+                planet.classList.add('planet');
+                planet.textContent = server.name;
+                planet.setAttribute('title', server.description);
+                planet.dataset.serverId = server.id;
+                
+                // Configure planet orbit
+                const orbitDuration = 20 + index * 5; // Planets further from sun orbit more slowly
+                planet.style.setProperty('--orbit-radius', `${orbitRadius}px`);
+                planet.style.animation = `orbit ${orbitDuration}s linear infinite`;
+                
+                // Add click event
+                planet.addEventListener('click', () => goToServer(server.id));
+                
+                orbit.appendChild(planet);
+            });
+        }
+
+        // Go to selected server
+        function goToServer(serverId) {
+            console.log(`Navigating to server with ID: ${serverId}`);
+            
+            // Find the server from the sample data
+            const server = sampleServers.find(s => s.id === serverId);
+            if (server) {
+                alert(`Navigating to server: ${server.name}`);
+                // window.location.href = `server.html?id=${serverId}`;
+            }
+        }
+
+        // Open join server modal
+        function openJoinServerModal() {
+            document.getElementById('joinServerModal').style.display = 'flex';
+        }
+
+        // Open create server modal
+        function openCreateServerModal() {
+            document.getElementById('createServerModal').style.display = 'flex';
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Join server form submission
+        document.getElementById('joinServerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const serverCode = document.getElementById('serverCode').value;
+            
+            if (!serverCode.trim()) {
+                alert('Please enter a valid server code');
+                return;
+            }
+            
+            // In a real app, this would send a request to the backend to join the server
+            alert(`Joining server with code: ${serverCode}`);
+            
+            // Add a new server to the sample data (simulating success)
+            const newServer = {
+                id: sampleServers.length + 1,
+                name: `Joined Server ${sampleServers.length + 1}`,
+                description: "A server you've joined"
+            };
+            
+            sampleServers.push(newServer);
+            createSolarSystem();
+            closeModal('joinServerModal');
+            
+            // Reset the form
+            document.getElementById('joinServerForm').reset();
+        });
+
+        // Create server form submission
+        document.getElementById('createServerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const serverName = document.getElementById('serverName').value;
+            const serverDescription = document.getElementById('serverDescription').value || "No description provided";
+            
+            if (!serverName.trim()) {
+                alert('Please enter a valid server name');
+                return;
+            }
+            
+            // In a real app, this would send a request to the backend to create the server
+            alert(`Creating server: ${serverName}`);
+            
+            // Add the new server to the sample data (simulating success)
+            const newServer = {
+                id: sampleServers.length + 1,
+                name: serverName,
+                description: serverDescription
+            };
+            
+            sampleServers.push(newServer);
+            createSolarSystem();
+            closeModal('createServerModal');
+            
+            // Reset the form
+            document.getElementById('createServerForm').reset();
+        });
+
+        // Logout function
+        function logout() {
+            // In a real app, this would clear session data and redirect to login
+            alert('Logging out...');
+            window.location.href = 'signin.html';
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+
+        // Initialize the page
+        function init() {
+            createStars();
+            createSolarSystem();
+        }
+
+        // Run initialization when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

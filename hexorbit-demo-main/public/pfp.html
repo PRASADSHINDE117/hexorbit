@@ -643,13 +643,13 @@
     <nav>
         <div class="nav-container">
             <div class="nav-links">
-                <a href="dashboard.html">Dashboard</a>
-                <a href="explore.html">Explore</a>
+                <a href="test_home.html">Dashboard</a>
+                <a href="about.html">Explore</a>
                 <a href="missions.html">Missions</a>
                 <a href="community.html">Community</a>
             </div>
             <div class="user-controls">
-                <a href="profile.html" class="avatar active" id="userAvatar">JS</a>
+                <a href="pfp.html" class="avatar active" id="userAvatar">JS</a>
             </div>
         </div>
     </nav>
@@ -808,107 +808,263 @@
         }
         
         // Load user data
-        function loadUserData() {
-            // In a real app, you would fetch this from your backend
-            // For demo purposes, we'll use localStorage
-            const userData = JSON.parse(localStorage.getItem('hexOrbitUser') || '{}');
-            
-            if (userData.name) {
-                // Split name into first and last
-                const nameParts = userData.name.split(' ');
-                document.getElementById('firstName').value = nameParts[0] || '';
-                document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
-                document.getElementById('sidebarName').textContent = userData.name;
-                
-                // Set avatar initials
-                const initials = nameParts[0].charAt(0) + (nameParts[1] ? nameParts[1].charAt(0) : '');
-                document.getElementById('avatarInitials').textContent = initials;
-                document.getElementById('userAvatar').textContent = initials;
-            }
-            
-            if (userData.email) {
-                document.getElementById('email').value = userData.email;
-                document.getElementById('sidebarEmail').textContent = userData.email;
-            }
-            
-            // Set username if available, otherwise generate from email
-            if (userData.username) {
-                document.getElementById('username').value = userData.username;
-            } else if (userData.email) {
-                const username = userData.email.split('@')[0];
-                document.getElementById('username').value = username;
-            }
-            
-            // Set bio if available
-            if (userData.bio) {
-                document.getElementById('bio').value = userData.bio;
-            }
-        }
+function loadUserData() {
+    // In a real app, you would fetch this from your backend
+    // For demo purposes, we'll use localStorage
+    const userData = JSON.parse(localStorage.getItem('hexOrbitUser') || '{}');
+    
+    if (userData.name) {
+        // Split name into first and last
+        const nameParts = userData.name.split(' ');
+        document.getElementById('firstName').value = nameParts[0] || '';
+        document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
+        document.getElementById('sidebarName').textContent = userData.name;
         
-        // Form validations
-        function validateProfileForm() {
-            let isValid = true;
-            
-            // First name validation
-            const firstName = document.getElementById('firstName');
-            const firstNameError = document.getElementById('firstNameError');
-            
-            if (firstName.value.trim() === '') {
-                firstNameError.style.display = 'block';
-                firstName.style.borderColor = 'var(--error-color)';
-                isValid = false;
-            } else {
-                firstNameError.style.display = 'none';
-                firstName.style.borderColor = 'var(--secondary-color)';
-            }
-            
-            // Last name validation
-            const lastName = document.getElementById('lastName');
-            const lastNameError = document.getElementById('lastNameError');
-            
-            if (lastName.value.trim() === '') {
-                lastNameError.style.display = 'block';
-                lastName.style.borderColor = 'var(--error-color)';
-                isValid = false;
-            } else {
-                lastNameError.style.display = 'none';
-                lastName.style.borderColor = 'var(--secondary-color)';
-            }
-            
-            // Email validation
-            const email = document.getElementById('email');
-            const emailError = document.getElementById('emailError');
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            
-            if (!emailRegex.test(email.value)) {
-                emailError.style.display = 'block';
-                email.style.borderColor = 'var(--error-color)';
-                isValid = false;
-            } else {
-                emailError.style.display = 'none';
-                email.style.borderColor = 'var(--secondary-color)';
-            }
-            
-            // Username validation
-            const username = document.getElementById('username');
-            const usernameError = document.getElementById('usernameError');
-            
-            if (username.value.length < 4) {
-                usernameError.style.display = 'block';
-                username.style.borderColor = 'var(--error-color)';
-                isValid = false;
-            } else {
-                usernameError.style.display = 'none';
-                username.style.borderColor = 'var(--secondary-color)';
-            }
-            
-            return isValid;
+        // Set avatar initials
+        const initials = nameParts[0].charAt(0) + (nameParts[1] ? nameParts[1].charAt(0) : '');
+        document.getElementById('avatarInitials').textContent = initials;
+        document.getElementById('userAvatar').textContent = initials;
+    }
+    
+    if (userData.email) {
+        document.getElementById('email').value = userData.email;
+        document.getElementById('sidebarEmail').textContent = userData.email;
+    }
+    
+    // Set username if available, otherwise generate from email
+    if (userData.username) {
+        document.getElementById('username').value = userData.username;
+    } else if (userData.email) {
+        const username = userData.email.split('@')[0];
+        document.getElementById('username').value = username;
+    }
+    
+    // Set bio if available
+    if (userData.bio) {
+        document.getElementById('bio').value = userData.bio;
+    }
+}
+
+// Form validations
+function validateProfileForm() {
+    let isValid = true;
+    
+    // First name validation
+    const firstName = document.getElementById('firstName');
+    const firstNameError = document.getElementById('firstNameError');
+    
+    if (firstName.value.trim() === '') {
+        firstNameError.style.display = 'block';
+        firstName.style.borderColor = 'var(--error-color)';
+        isValid = false;
+    } else {
+        firstNameError.style.display = 'none';
+        firstName.style.borderColor = 'var(--secondary-color)';
+    }
+    
+    // Last name validation
+    const lastName = document.getElementById('lastName');
+    const lastNameError = document.getElementById('lastNameError');
+    
+    if (lastName.value.trim() === '') {
+        lastNameError.style.display = 'block';
+        lastName.style.borderColor = 'var(--error-color)';
+        isValid = false;
+    } else {
+        lastNameError.style.display = 'none';
+        lastName.style.borderColor = 'var(--secondary-color)';
+    }
+    
+    // Email validation
+    const email = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (!emailRegex.test(email.value)) {
+        emailError.style.display = 'block';
+        email.style.borderColor = 'var(--error-color)';
+        isValid = false;
+    } else {
+        emailError.style.display = 'none';
+        email.style.borderColor = 'var(--secondary-color)';
+    }
+    
+    // Username validation
+    const username = document.getElementById('username');
+    const usernameError = document.getElementById('usernameError');
+    
+    if (username.value.length < 4) {
+        usernameError.style.display = 'block';
+        username.style.borderColor = 'var(--error-color)';
+        isValid = false;
+    } else {
+        usernameError.style.display = 'none';
+        username.style.borderColor = 'var(--secondary-color)';
+    }
+    
+    return isValid;
+}
+
+function validatePasswordForm() {
+    let isValid = true;
+    
+    // Current password validation
+    const currentPassword = document.getElementById('currentPassword');
+    const currentPasswordError = document.getElementById('currentPasswordError');
+    
+    if (currentPassword.value.trim() === '') {
+        currentPasswordError.style.display = 'block';
+        currentPassword.style.borderColor = 'var(--error-color)';
+        isValid = false;
+    } else {
+        currentPasswordError.style.display = 'none';
+        currentPassword.style.borderColor = 'var(--secondary-color)';
+    }
+    
+    // New password validation
+    const newPassword = document.getElementById('newPassword');
+    const newPasswordError = document.getElementById('newPasswordError');
+    
+    if (newPassword.value.length < 8) {
+        newPasswordError.style.display = 'block';
+        newPassword.style.borderColor = 'var(--error-color)';
+        isValid = false;
+    } else {
+        newPasswordError.style.display = 'none';
+        newPassword.style.borderColor = 'var(--secondary-color)';
+    }
+    
+    // Confirm password validation
+    const confirmPassword = document.getElementById('confirmPassword');
+    const confirmPasswordError = document.getElementById('confirmPasswordError');
+    
+    if (confirmPassword.value !== newPassword.value) {
+        confirmPasswordError.style.display = 'block';
+        confirmPassword.style.borderColor = 'var(--error-color)';
+        isValid = false;
+    } else {
+        confirmPasswordError.style.display = 'none';
+        confirmPassword.style.borderColor = 'var(--secondary-color)';
+    }
+    
+    return isValid;
+}
+
+// Save user data
+function saveUserData() {
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const bio = document.getElementById('bio').value.trim();
+    
+    const userData = {
+        name: `${firstName} ${lastName}`,
+        email: email,
+        username: username,
+        bio: bio
+    };
+    
+    // In a real app, you would send this to your backend
+    // For demo purposes, we'll use localStorage
+    localStorage.setItem('hexOrbitUser', JSON.stringify(userData));
+    
+    // Update sidebar
+    document.getElementById('sidebarName').textContent = userData.name;
+    document.getElementById('sidebarEmail').textContent = userData.email;
+    
+    // Update avatar initials
+    const initials = firstName.charAt(0) + (lastName ? lastName.charAt(0) : '');
+    document.getElementById('avatarInitials').textContent = initials;
+    document.getElementById('userAvatar').textContent = initials;
+    
+    // Show success message
+    const successMessage = document.getElementById('profileSuccess');
+    successMessage.style.display = 'block';
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => {
+        successMessage.style.display = 'none';
+    }, 3000);
+}
+
+function changePassword() {
+    // In a real app, you would send this to your backend for verification
+    
+    // Show success message
+    const successMessage = document.getElementById('passwordSuccess');
+    successMessage.style.display = 'block';
+    
+    // Clear form fields
+    document.getElementById('currentPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => {
+        successMessage.style.display = 'none';
+    }, 3000);
+}
+
+// UI Toggling
+function showProfileSection() {
+    document.getElementById('profileSection').style.display = 'block';
+    document.getElementById('passwordSection').style.display = 'none';
+}
+
+function showPasswordSection() {
+    document.getElementById('profileSection').style.display = 'none';
+    document.getElementById('passwordSection').style.display = 'block';
+}
+
+// Event listeners
+function setupEventListeners() {
+    // Profile form
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (validateProfileForm()) {
+            saveUserData();
         }
-        
-        function validatePasswordForm() {
-            let isValid = true;
-            
-            // Current password validation
-            const currentPassword = document.getElementById('currentPassword');
-            const currentPasswordError = document.getElementById('currentPasswor');
+    });
+    
+    // Password form
+    document.getElementById('passwordForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (validatePasswordForm()) {
+            changePassword();
         }
+    });
+    
+    // UI toggling
+    document.getElementById('editProfileBtn').addEventListener('click', showProfileSection);
+    document.getElementById('changePasswordBtn').addEventListener('click', showPasswordSection);
+    document.getElementById('cancelProfileBtn').addEventListener('click', function() {
+        loadUserData();
+    });
+    document.getElementById('cancelPasswordBtn').addEventListener('click', showProfileSection);
+    
+    // Logout button
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        // In a real app, you would handle logout properly
+        alert('Logged out successfully!');
+        // Optionally redirect to login page
+        // window.location.href = 'login.html';
+    });
+    
+    // Avatar click handler
+    document.getElementById('profileAvatar').addEventListener('click', function() {
+        // In a real app, this would open a file upload dialog
+        alert('This would open a file upload dialog in a real application');
+    });
+}
+
+// Initialize the page
+function initialize() {
+    createStars();
+    loadUserData();
+    setupEventListeners();
+    showProfileSection(); // Start with profile section visible
+}
+
+// Run initialization when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initialize);

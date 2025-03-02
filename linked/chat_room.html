@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEX-ORBIT - Server View</title>
+    <style>
+        :root {
+            --primary-color: #2a2a36;
+            --secondary-color: #4a4a6a;
+            --accent-color: #7b68ee;
+            --text-color: #e0e0ff;
+            --highlight-color: #ff7b68;
+            --chat-bg: #202030;
+            --message-bg: #303045;
+            --user-message-bg: #3a3a55;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        /* Stars background styling */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+            background: transparent;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            opacity: var(--opacity);
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: var(--opacity); }
+            50% { opacity: 0.2; }
+        }
+        
+        /* Header styling */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(
+                to bottom,
+                rgba(42, 42, 54, 0.9),
+                rgba(42, 42, 54, 0.5)
+            );
+            border-bottom: 2px solid var(--accent-color);
+            position: relative;
+            z-index: 100;
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            background: linear-gradient(to right, var(--highlight-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: title-glow 3s infinite alternate;
+        }
+        
+        @keyframes title-glow {
+            0% { text-shadow: 0 0 10px rgba(123, 104, 238, 0.5); }
+            100% { text-shadow: 0 0 20px rgba(255, 123, 104, 0.8), 0 0 30px rgba(123, 104, 238, 0.6); }
+        }
+        
+        header button {
+            background: none;
+            border: 1px solid var(--accent-color);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            border-radius: 4px;
+        }
+        
+        header button:hover {
+            background: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        
+        /* Toggle sidebar button */
+        .toggle-sidebar {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            background: var(--accent-color);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            z-index: 110;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-sidebar:hover {
+            background: var(--highlight-color);
+            transform: translateY(-2px);
+        }
+        
+        /* Sidebar styling */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background: rgba(42, 42, 54, 0.95);
+            padding: 4rem 1rem 1rem;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            z-index: 100;
+            border-right: 2px solid var(--accent-color);
+        }
+        
+        .sidebar.active {
+            left: 0;
+        }
+        
+        .sidebar h2 {
+            color: var(--highlight-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .sidebar h3 {
+            color: var(--text-color);
+            margin: 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--accent-color);
+        }
+        
+        .sidebar .server-info {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--accent-color);
+        }
+        
+        .sidebar .server-info .server-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(to right, var(--accent-color), var(--highlight-color));
+            margin: 0 auto 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .sidebar .server-info h2 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar .server-info p {
+            color: var(--text-color);
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .sidebar ul li {
+            margin: 0.5rem 0;
+        }
+        
+        .sidebar ul li button {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--secondary-color);
+            border: none;
+            border-radius: 4px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar ul li button:hover, .sidebar ul li button.active {
+            background: var(--accent-color);
+            transform: translateX(5px);
+        }
+        
+        .sidebar ul li button .channel-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            font-size: 0.8rem;
+        }
+
+        /* Back button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: var(--secondary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+        
+        .back-button:hover {
+            background: var(--accent-color);
+            transform: translateX(-5px);
+        }
+        
+        /* Main content area */
+        .main-content {
+            margin-left: 0;
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+            min-height: calc(100vh - 60px);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 50;
+        }
+        
+        .sidebar.active ~ .main-content {
+            margin-left: 300px;
+        }
+
+        /* Server view styling */
+        .server-view {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 120px);
+        }
+        
+        .server-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(42, 42, 54, 0.8);
+            border-radius: 10px 10px 0 0;
+            border: 1px solid var(--accent-color);
+            border-bottom: none;
+        }
+        
+        .server-header h2 {
+            color: var(--highlight-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .server-header h2 .channel-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .chat-container {
+            flex: 1;
+            background: var(--chat-bg);
+            border-left: 1px solid var(--accent-color);
+            border-right: 1px solid var(--accent-color);
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            border-radius: 10px;
+            background: var(--message-bg);
+            max-width: 80%;
+            align-self: flex-start;
+            word-break: break-word;
+        }
+        
+        .message.user-message {
+            background: var(--user-message-bg);
+            align-self: flex-end;
+        }
+        
+        .message .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .message .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .message .username {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .message .timestamp {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Message input */
+        .message-input-container {
+            padding: 1rem;
+            background: rgba(42, 42, 54, 0.8);
+            border-radius: 0 0 10px 10px;
+            border: 1px solid var(--accent-color);
+            border-top: none;
+        }
+        
+        .message-input-form {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: 20px;
+            border: 1px solid var(--secondary-color);
+            background: rgba(74, 74, 106, 0.3);
+            color: var(--text-color);
+            resize: none;
+        }
+        
+        .message-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        
+        .send-button {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(to right, var(--accent-color), var(--highlight-color));
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(123, 104, 238, 0.4);
+        }
+        
+        /* User list */
+        .user-list {
+            width: 220px;
+            background: rgba(42, 42, 54, 0.7);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--accent-color);
+            margin-left: 1rem;
+        }
+        
+        .user-list h3 {
+            color: var(--highlight-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--accent-color);
+        }
+        
+        .user-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        
+        .user-item:hover {
+            background: rgba(74, 74, 106, 0.3);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .online-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #2ecc71;
+            margin-left: auto;
+        }
+        
+        .offline-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #95a5a6;
+            margin-left: auto;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .server-content {
+                flex-direction: column;
+            }
+            
+            .user-list {
+                width: 100%;
+                margin: 1rem 0 0 0;
+            }
+            
+            .chat-area {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .sidebar {
+                width: 250px;
+                left: -250px;
+            }
+            
+            .sidebar.active ~ .main-content {
+                margin-left: 0;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Stars Background -->
+    <div class="stars" id="stars"></div>
+
+    <!-- Header -->
+    <header>
+        <h1>HEX-ORBIT</h1>
+        <div>
+            <button onclick="window.location.href='user_profile.html'">Profile</button>
+            <button onclick="window.location.href='about.html'">About</button>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <!-- Toggle Sidebar Button -->
+    <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="server-info">
+            <div class="server-icon" id="serverIcon">SE</div>
+            <h2 id="serverName">Server Name</h2>
+            <p id="serverDescription">Server description will appear here</p>
+        </div>
+        
+        <button class="back-button" onclick="goBackToHexOrbit()">
+            ← Back to HEX-ORBIT
+        </button>
+        
+        <h3>Text Channels</h3>
+        <ul id="channelList">
+            <!-- Channels will be loaded dynamically -->
+        </ul>
+        
+        <h3>Voice Channels</h3>
+        <ul id="voiceChannelList">
+            <!-- Voice channels will be loaded dynamically -->
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="server-view">
+            <div class="server-header">
+                <h2 id="currentChannelName"><span class="channel-icon">#</span> welcome</h2>
+                <div>
+                    <button id="inviteButton" onclick="showInviteCode()">Invite</button>
+                </div>
+            </div>
+            
+            <div class="chat-container" id="chatContainer">
+                <!-- Messages will be loaded dynamically -->
+            </div>
+            
+            <div class="message-input-container">
+                <form class="message-input-form" id="messageForm">
+                    <textarea 
+                        class="message-input" 
+                        id="messageInput" 
+                        placeholder="Type a message..." 
+                        rows="1"
+                        required
+                    ></textarea>
+                    <button type="submit" class="send-button">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for servers
+        const servers = [
+            { 
+                id: 1, 
+                name: "Cosmic Explorers", 
+                description: "A community for space enthusiasts",
+                channels: [
+                    { id: 1, name: "welcome", type: "text" },
+                    { id: 2, name: "general", type: "text" },
+                    { id: 3, name: "astronomy", type: "text" },
+                    { id: 4, name: "space-news", type: "text" },
+                    { id: 5, name: "voice-chat", type: "voice" },
+                    { id: 6, name: "astronomy-voice", type: "voice" }
+                ]
+            },
+            { 
+                id: 2, 
+                name: "Quantum Coders", 
+                description: "Programming and development discussions",
+                channels: [
+                    { id: 1, name: "welcome", type: "text" },
+                    { id: 2, name: "general", type: "text" },
+                    { id: 3, name: "python", type: "text" },
+                    { id: 4, name: "javascript", type: "text" },
+                    { id: 5, name: "code-review", type: "text" },
+                    { id: 6, name: "voice-chat", type: "voice" },
+                    { id: 7, name: "debugging-voice", type: "voice" }
+                ]
+            },
+            { 
+                id: 3, 
+                name: "Nebula Gamers", 
+                description: "Gaming community for all platforms",
+                channels: [
+                    { id: 1, name: "welcome", type: "text" },
+                    { id: 2, name: "general", type: "text" },
+                    { id: 3, name: "pc-gaming", type: "text" },
+                    { id: 4, name: "console-gaming", type: "text" },
+                    { id: 5, name: "game-deals", type: "text" },
+                    { id: 6, name: "voice-chat", type: "voice" },
+                    { id: 7, name: "squad-voice", type: "voice" }
+                ]
+            },
+            { 
+                id: 4, 
+                name: "Stellar Art", 
+                description: "Share and discuss digital art",
+                channels: [
+                    { id: 1, name: "welcome", type: "text" },
+                    { id: 2, name: "general", type: "text" },
+                    { id: 3, name: "artwork-showcase", type: "text" },
+                    { id: 4, name: "tutorials", type: "text" },
+                    { id: 5, name: "critiques", type: "text" },
+                    { id: 6, name: "voice-chat", type: "voice" }
+                ]
+            },
+            { 
+                id: 5, 
+                name: "Orbital Chat", 
+                description: "General discussions about everything",
+                channels: [
+                    { id: 1, name: "welcome", type: "text" },
+                    { id: 2, name: "general", type: "text" },
+                    { id: 3, name: "random", type: "text" },
+                    { id: 4, name: "memes", type: "text" },
+                    { id: 5, name: "voice-chat", type: "voice" },
+                    { id: 6, name: "music-voice", type: "voice" }
+                ]
+            }
+        ];
+        
+        // Sample messages for channels
+        const sampleMessages = [
+            { id: 1, userId: 1, username: "SpaceWalker", content: "Welcome to our server! Feel free to introduce yourself.", timestamp: "10:30 AM" },
+            { id: 2, userId: 2, username: "StarGazer", content: "Hello everyone! I'm new here and excited to join this community.", timestamp: "10:35 AM" },
+            { id: 3, userId: 3, username: "CosmicVoyager", content: "Has anyone seen the latest space telescope images?", timestamp: "10:42 AM" },
+            { id: 4, userId: 1, username: "SpaceWalker", content: "Yes! They're absolutely stunning. The detail is incredible.", timestamp: "10:45 AM" },
+            { id: 5, userId: 4, username: "NebulaDreamer", content: "I'm working on a 3D model of the Crab Nebula based on those images.", timestamp: "10:52 AM" },
+            { id: 6, userId: 2, username: "StarGazer", content: "That sounds amazing! Would love to see it when you're done.", timestamp: "10:55 AM" },
+            { id: 7, userId: 3, username: "CosmicVoyager", content: "There's a meteor shower expected this weekend, weather permitting.", timestamp: "11:03 AM" },
+            { id: 8, userId: 1, username: "SpaceWalker", content: "Thanks for the heads up! I'll definitely try to catch it.", timestamp: "11:10 AM" }
+        ];
+        
+        // Current server and channel state
+        let currentServerId = null;
+        let currentChannelId = null;
+        
+        // Create animated stars for background
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 500;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * 3 + 0.5;
+                const duration = 2 + Math.random() * 5;
+                const opacity = 0.5 + Math.random() * 0.5;
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                star.style.setProperty('--opacity', opacity);
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Toggle sidebar visibility
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("active");
+        }
+        
+        // Load server data
+        function loadServer(serverId) {
+            currentServerId = serverId;
+            
+            // Find the server data
+            const server = servers.find(s => s.id === serverId);
+            if (!server) return;
+            
+            // Update server info in sidebar
+            document.getElementById('serverName').textContent = server.name;
+            document.getElementById('serverDescription').textContent = server.description;
+            document.getElementById('serverIcon').textContent = getInitials(server.name);
+            
+            // Load channels
+            loadChannels(server);
+            
+            // Load the default channel (usually welcome channel)
+            const defaultChannel = server.channels.find(c => c.name === "welcome" && c.type === "text") || server.channels[0];
+            loadChannel(defaultChannel.id);
+        }
+        
+        // Load channels for a server
+        function loadChannels(server) {
+            const textChannelList = document.getElementById('channelList');
+            const voiceChannelList = document.getElementById('voiceChannelList');
+            
+            // Clear existing channels
+            textChannelList.innerHTML = '';
+            voiceChannelList.innerHTML = '';
+            
+            // Add text channels
+            server.channels.filter(c => c.type === "text").forEach(channel => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <button onclick="loadChannel(${channel.id})" id="channel-${channel.id}">
+                        <span class="channel-icon">#</span> ${channel.name}
+                    </button>
+                `;
+                textChannelList.appendChild(li);
+            });
+            
+            // Add voice channels
+            server.channels.filter(c => c.type === "voice").forEach(channel => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <button onclick="joinVoiceChannel(${channel.id})">
+                        <span class="channel-icon">🔊</span> ${channel.name}
+                    </button>
+                `;
+                voiceChannelList.appendChild(li);
+            });
+        }
+        
+        // Load specific channel
+        function loadChannel(channelId) {
+            if (!currentServerId) return;
+            
+            currentChannelId = channelId;
+            const server = servers.find(s => s.id === currentServerId);
+            if (!server) return;
+            
+            const channel = server.channels.find(c => c.id === channelId);
+            if (!channel) return;
+            
+            // Update active channel styling
+            const channelButtons = document.querySelectorAll('#channelList button');
+            channelButtons.forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`channel-${channelId}`)?.classList.add('active');
+            
+            // Update channel header
+            document.getElementById('currentChannelName').innerHTML = `<span class="channel-icon">#</span> ${channel.name}`;
+            
+            // Load messages for this channel
+            loadMessages(channelId);
+        }
+        
+        // Load messages for a channel
+        function loadMessages(channelId) {
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.innerHTML = '';
+            
+            // In a real app, you would fetch messages for the specific channel
+            // For this demo, we'll use the same sample messages for all channels
+            sampleMessages.forEach(message => {
+                const isCurrentUser = message.userId === 1; // Assume user 1 is the current user
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+                if (isCurrentUser) {
+                    messageDiv.classList.add('user-message');
+                }
+                
+                messageDiv.innerHTML = `
+                    <div class="message-header">
+                        <div class="avatar">${getInitials(message.username)}</div>
+                        <div class="username">${message.username}</div>
+                        <div class="timestamp">${message.timestamp}</div>
+                    </div>
+                    <div class="message-content">${message.content}</div>
+                `;
+                
+                chatContainer.appendChild(messageDiv);
+            });
+            
+            // Scroll to bottom of chat
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // Join voice channel
+        function joinVoiceChannel(channelId) {
+            if (!currentServerId) return;
+            
+            const server = servers.find(s => s.id === currentServerId);
+            if (!server) return;
+            
+            const channel = server.channels.find(c => c.id === channelId && c.type === "voice");
+            if (!channel) return;
+            
+            // In a real app, this would initiate a voice connection
+            alert(`Joining voice channel: ${channel.name}`);
+        }
+        
+        // Go back to main HEX-ORBIT page
+        function goBackToHexOrbit() {
+            window.location.href = 'test_home.html';
+        }
+        
+        // Show invite code for current server
+        function showInviteCode() {
+            if (!currentServerId) return;
+            
+            // In a real app, this would generate/fetch an invite code from the server
+            const inviteCode = `HEX-${currentServerId}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+            
+            alert(`Invite your friends with this code: ${inviteCode}`);
+        }
+        
+        // Get initials from name (for avatars)
+        function getInitials(name) {
+            return name
+                .split(' ')
+                .map(word => word.charAt(0))
+                .join('')
+                .toUpperCase()
+                .substring(0, 2);
+        }
+        
+        // Handle message submission
+        document.getElementById('messageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const messageInput = document.getElementById('messageInput');
+            const messageContent = messageInput.value.trim();
+            
+            if (!messageContent || !currentServerId || !currentChannelId) return;
+            
+            // In a real app, this would send the message to the server
+            // For this demo, we'll add it to the chat locally
+            const newMessage = {
+                id: sampleMessages.length + 1,
+                userId: 1, // Current user ID
+                username: "You", // Current username
+                content: messageContent,
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+            
+            // Add message to chat
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', 'user-message');
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <div class="avatar">${getInitials(newMessage.username)}</div>
+                    <div class="username">${newMessage.username}</div>
+                    <div class="timestamp">${newMessage.timestamp}</div>
+                </div>
+                <div class="message-content">${newMessage.content}</div>
+            `;
+            
+            chatContainer.appendChild(messageDiv);
+            
+            // Clear input and scroll to bottom
+            messageInput.value = '';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+        
+        // Logout function
+        function logout() {
+            // In a real app, this would handle the logout process
+            alert('Logging out...');
+            // window.location.href = 'login.html';
+        }
+        
+        // Initialize the app
+        window.onload = function() {
+            createStars();
+            
+            // Get server ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const serverId = parseInt(urlParams.get('id')) || 1;
+            
+            // Load server data
+            loadServer(serverId);
+            
+            // Make textarea auto-resize
+            const messageInput = document.getElementById('messageInput');
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                // Limit to max 5 rows
+                if (this.scrollHeight > 150) {
+                    this.style.height = '150px';
+                }
+            });
+            
+            // Open sidebar by default on larger screens
+            if (window.innerWidth > 1024) {
+                document.getElementById("sidebar").classList.add("active");
+            }
+        };
+    </script>
+</body>
+</html>
