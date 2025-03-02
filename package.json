@@ -1,0 +1,32 @@
+{
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.14.0",
+    "mongoose": "^8.11.0"
+  },
+  "name": "hexorbit",
+  "version": "1.0.0",
+  "description": "project ADD",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PRASADSHINDE117/hexorbit.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PRASADSHINDE117/hexorbit/issues"
+  },
+  "homepage": "https://github.com/PRASADSHINDE117/hexorbit#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
